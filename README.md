@@ -113,7 +113,6 @@ document.body.classList.add('results-ready');
 
 Este projeto foi desenvolvido para fins educacionais durante a Semana do Zero ao Programador Contratado.
 
-
 ---
 
 <p align="center">
