@@ -36,21 +36,50 @@ document.addEventListener("DOMContentLoaded", function () {
             codeHtml.textContent = data.html || "";
             codeCSS.textContent = data.css || "";
 
-            previewSection.style.display = "block";
-            previewSection.innerHTML = data.html || "";
+            console.log("HTML recebido:", data.html);
+            console.log("CSS recebido:", data.css);
 
-            // Aplicar o CSS dinmicamente ao fundo da página
+            // Criar ou limpar o container de fundo
+            let backgroundContainer = document.getElementById("dynamic-background");
+            if (!backgroundContainer) {
+                backgroundContainer = document.createElement("div");
+                backgroundContainer.id = "dynamic-background";
+                document.body.insertBefore(backgroundContainer, document.body.firstChild);
+            }
+            backgroundContainer.innerHTML = data.html || "";
+
+            // Aplicar o CSS dinamicamente - ajustando seletores para funcionar dentro do container
             let tagStyle = document.getElementById("dynamic-style");
-            // Se a tag de estilo já existir, removê-la para evitar duplicações
             if (tagStyle) {
                 tagStyle.remove();
             }
             if (data.css) {
+                // Modificar o CSS para aplicar ao container de fundo
+                let modifiedCSS = data.css
+                    .replace(/body\s*{/g, '#dynamic-background {')
+                    .replace(/html\s*{/g, '#dynamic-background {');
+
                 tagStyle = document.createElement("style");
                 tagStyle.id = 'dynamic-style';
-                tagStyle.textContent = data.css;
+                tagStyle.textContent = `
+                    #dynamic-background {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        z-index: -1;
+                        pointer-events: none;
+                        overflow: hidden;
+                    }
+                    ${modifiedCSS}
+                `;
                 document.head.appendChild(tagStyle);
             }
+
+            // Mostrar o preview na seção também
+            previewSection.style.display = "block";
+            previewSection.innerHTML = data.html || "";
 
             // Adicionar a classe para aplicar o efeito no fundo
             document.body.classList.add('results-ready');
